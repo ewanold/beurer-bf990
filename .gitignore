@@ -1,0 +1,11 @@
+database/
+__pycache__/
+*.pyc
+.venv/
+core
+.gradle/
+build/
+local.properties
+
+codex-resume.sh
+.obsidian/

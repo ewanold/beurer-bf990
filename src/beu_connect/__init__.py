@@ -1,0 +1,1 @@
+"""Beurer Bluetooth connection proof."""

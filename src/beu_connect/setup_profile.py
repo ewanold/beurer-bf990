@@ -194,7 +194,7 @@ class Session:
                 self.emit("subscription_cleanup_warning")
 
 
-def configure(session, profile, state, persist, emit):
+def configure(session, profile, state, persist, emit, expected_index=None):
     if "user_index" not in state:
         if state["phase"] != "prepared":
             raise RuntimeError("Unresolved registration; refusing duplicate creation")
@@ -207,6 +207,8 @@ def configure(session, profile, state, persist, emit):
         state.update(user_index=index, phase="registered")
         persist(state)  # Recover using the same user from this point onward.
         print("New user registration confirmed by the scale.", flush=True)
+    if expected_index is not None and state["user_index"] != expected_index:
+        raise RuntimeError("Assigned user index differs from the requested test index; saved for recovery, no profile writes performed")
     session.control(2, bytes([state["user_index"]]) + state["consent_code"].to_bytes(2, "little"))
     if session.read("181c", "2a9a") != bytes([state["user_index"]]):
         raise RuntimeError("Selected user does not match the newly registered user")
@@ -257,6 +259,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", type=Path, default=ROOT / "database/profile-input.json")
     parser.add_argument("--state", type=Path, default=ROOT / "database/profile-state.json")
+    parser.add_argument("--expected-index", type=int, choices=range(1, 255), help="Stop after saving registration if the assigned index differs")
     parser.add_argument("--timeout", type=positive, default=20)
     parser.add_argument("--listen-seconds", type=positive, default=60)
     parser.add_argument("--start-measurement", action="store_true",
@@ -304,7 +307,7 @@ def main(argv=None):
                 check_state(state, device["address"], profile)
                 for service, short in (("181c", "2a9f"), ("181d", "2a9d"), ("181b", "2a9c")):
                     session.subscribe(service, short)
-                configure(session, profile, state, lambda s: save_state(args.state, s), emit)
+                configure(session, profile, state, lambda s: save_state(args.state, s), emit, args.expected_index)
                 if args.start_measurement:
                     start_measurement(session, emit)
                 print(f"LISTENING for {args.listen_seconds:g} seconds. Perform a reference measurement now.", flush=True)

@@ -19,6 +19,7 @@ Native Python with system dbus/GLib and BlueZ. No packages were installed during
 - [HANDOVER.md](HANDOVER.md): complete resumable checkpoint, commands, files, limits.
 - [TODOS.md](TODOS.md): current work queue.
 - [OBSERVATIONS.md](OBSERVATIONS.md): next display-versus-packet verification session.
+- [PROTOCOL_TEST_HANDOFF.md](PROTOCOL_TEST_HANDOFF.md): bounded offline test assignment and live-test safeguards for a separate session.
 - [ARCHITECTURE.md](ARCHITECTURE.md): modules, runtime, storage.
 - [LOCAL_PROFILE.md](LOCAL_PROFILE.md): registration, consent, recovery state.
 - [CAPTURE.md](CAPTURE.md): capture workflow and experiment results.
@@ -32,4 +33,16 @@ Native Python with system dbus/GLib and BlueZ. No packages were installed during
 
 ## Android preparation
 
-A buildable Android skeleton is in `android/`. BLE reception, user management, storage, charts and backup/restore still need implementation and hardware validation; see [HANDOVER.md](HANDOVER.md).
+The Android app has a provisional BLE current-reading path, private latest-reading storage and an emulator-only synthetic packet mode. It builds and its synthetic display was exercised; physical Android BLE and user onboarding still require validation. SQLite daily/weekly/monthly retention and basic charts are implemented with synthetic emulator checks; backup remains unimplemented; see [HANDOVER.md](HANDOVER.md).
+
+## Household user model
+
+Household members agree on scale user indices. The app should list the scale’s available indices and offer an Add user option. On each new phone, a person selects their index and enters a local display name; the app should verify the date of birth against the selected scale profile. If a user is demonstrably missing, offer registration. Settings should offer profile modification. Scale-side deletion is deferred. Enumeration, verification on a new phone and existing-user consent recovery still need protocol validation; an unknown or inaccessible index is not proof of an empty slot. See [HANDOVER.md](HANDOVER.md).
+
+## Measurement import policy
+
+The owner wants measurements older than five minutes discarded, because readings under a selected user may belong to someone else. Read the scale clock before correction; assess incoming timestamps against that clock, then correct drift beyond roughly one minute. If the measurement window expires during setup, offer another reading. Invalid or uncertain timestamps must not silently become current readings. HR research is low priority. See [HANDOVER.md](HANDOVER.md#measurement-freshness-and-user-discovery-decisions).
+
+## Language and password terminology
+
+The owner requests internationalization, a Settings language selector, and user-facing “Password (4 digits)” terminology for the existing scale consent code. These are not implemented; see [HANDOVER.md](HANDOVER.md#next-session-requirements-language-and-password-wording).

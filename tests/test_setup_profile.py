@@ -104,6 +104,18 @@ class SetupTests(unittest.TestCase):
         self.assertNotIn(1, fake.calls)
         self.assertEqual(fake.calls, [2])
 
+    def test_unexpected_assigned_index_is_saved_before_stopping(self):
+        fake = FakeSession()
+        original_control = fake.control
+        fake.control = lambda opcode, payload: 3 if opcode == 1 else original_control(opcode, payload)
+        state = self.state()
+        saved = []
+        with self.assertRaisesRegex(RuntimeError, "differs"):
+            configure(fake, PROFILE, state, lambda s: saved.append(dict(s)), lambda *a, **k: None, expected_index=2)
+        self.assertEqual(state["user_index"], 3)
+        self.assertEqual(saved[-1]["phase"], "registered")
+        self.assertEqual(fake.calls, [])
+
     def test_existing_selected_user_blocks_creation(self):
         fake = FakeSession()
         fake.fields["2a9a"] = b"\x03"

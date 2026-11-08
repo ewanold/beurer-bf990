@@ -12,3 +12,15 @@ The Android app is an early skeleton, not yet a working scale app. These steps t
 The app uses AGP 9.1.1, Gradle 9.3.1, compile/target API 36 and minimum API 26. The SDK used to compile does not determine the minimum phone version. This combination built the skeleton successfully on this host; the app has not been tested on an Android device. The first build may expose filesystem locking issues on a network share; use a local checkout if needed. A release requires a separately protected signing key; never commit signing keys, personal profiles, captures or measurements.
 
 The local `codex-resume.sh` is ignored because its chat ID belongs to one developer. Future contributors can use their own Codex session and the checked-in AI handover instead. See [MAIN.md](MAIN.md), [HANDOVER.md](HANDOVER.md), and [TODOS.md](TODOS.md).
+
+## Optional Android emulator
+
+Install the emulator and API 36 Google APIs x86-64 image with `bash scripts/install-test-emulator.sh`, then start it with `bash scripts/run-emulator.sh`. SDK package revisions are selected by Google; the bootstrap checksum does not cover them. The launcher uses automatic graphics and Quick Boot. KVM access is recommended. If graphics fail, try `bash scripts/run-emulator.sh -gpu software`. Once Android has booted, from the repository root install and launch the debug build:
+
+```bash
+"$ANDROID_HOME/platform-tools/adb" devices -l
+"$ANDROID_HOME/platform-tools/adb" -s emulator-5554 install -r android/app/build/outputs/apk/debug/app-debug.apk
+"$ANDROID_HOME/platform-tools/adb" -s emulator-5554 shell am start -n org.beurer.bf990/.MainActivity
+```
+
+Use the serial reported by `adb devices -l` if different. The AVD manager on this host printed a missing `devices.xml` warning while creating the Pixel 6 AVD, but created a usable configuration. On 2026-11-08 the app installed and its placeholder activity launched; automatic graphics selected software rendering due to a GPU-driver warning. No BF990 connection was tested.

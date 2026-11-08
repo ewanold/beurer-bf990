@@ -17,6 +17,10 @@
 
 ## 2026-11-08
 
+- Captured two owner-coordinated 60 s BlueZ advertising-property scans without measurements, GATT connections, or writes. Each exposed one BF990 property set with ServiceData; neither matched BF600 candidate UUID 0x181D. Result is inconclusive; raw bytes remain in ignored private captures. Added reusable scanner and recorded limitations in handover/protocol guide.
+
+- Added an offline BLE advertising structure parser, BF600-candidate-only pending-data extraction, synthetic parser coverage, and a staged live-test checklist. Full Python suite: 40 tests passed. No BF990 advertising/list behavior is inferred and no device operation occurred.
+
 - Compared the filled private worksheet against the six-record capture. Both entries agree on five metrics within display rounding; two current candidates are not uniquely distinguishable. No health values printed.
 - Added a constrained offline decoder/comparison and private readable/JSON reports. Verified weight/body percent/water conversion factors on observed samples; preserved unknown raw/private fields and null HR.
 - Fixed compact number-plus-kg parsing; all 33 synthetic/unit tests and decoder-launcher syntax pass. No new Bluetooth session/device writes.
@@ -41,3 +45,47 @@ After the user accepted the SDK license, verified API 36 revision 2, build tools
 Added the MIT license and a public-facing README introduction and AI handover guide; retained the Linux proof instructions and documented the Android skeleton status.
 
 Created a standalone BF990 protocol guide from project observations and moved the local reference and its reproductions out of the publishable tree into ignored private storage.
+
+Installed and started the API 36 emulator, installed the debug skeleton and confirmed its activity entered the foreground. KVM was available; graphics fell back automatically to software. AVD creation printed a devices.xml warning but produced a usable configuration. No scale test was performed.
+
+Added an Android navigation preview with separate current values, diagrams and settings pages. Scale connection, user setup, repeat, storage and backup remain disabled and unimplemented. No device protocol behavior is claimed by this UI.
+
+The navigation preview built successfully and was installed and launched on the API 36 emulator. Functional scale, storage and backup validation remains outstanding.
+
+The user clarified the household model: agreed scale indices, phone-local names, date-of-birth verification, registration for a missing user, and profile modification; scale-side deletion is deferred. Slot discovery and existing-user authorization on a new phone remain unverified.
+
+The user clarified that the selection screen should list available scale indices and provide an Add user option. The method for retrieving the indices remains to be verified.
+
+Documented BF600-derived candidate user enumeration, deletion, pending-data advertising, time and other commands with explicit BF990 uncertainty and a staged verification plan. No live commands or device writes were performed.
+
+Prepared a separate-session protocol test handoff with synthetic-first deliverables, evidence criteria, shared-working-tree guidance and live-device safeguards.
+
+Coordinated before/after measurement advertising scans; each recorded only a pre-discovery, potentially cached property snapshot, so identical properties are inconclusive. Raw monitor access required administrator privileges. No GATT connection or device write.
+
+Owner-assisted privileged btmon capture during discovery recorded live scale advertising after a measurement. No comparable raw baseline exists; pending-data semantics remain unverified. Capture stays in ignored database.
+
+Compared owner-coordinated raw advertisements before and after a measurement: one manufacturer-data byte had an additional transient variant after the measurement; causality and pending-data meaning remain unverified. HR was unavailable in that reading. No GATT connection or scale write.
+
+Coordinated disposable user 2 registration, fake profile readback, measurement confirmed by display and packet, selected-user deletion, reauthorization of user 1, and post-reconnect rejection of test credentials. User enumeration and deletion of historical data remain unverified. Added guarded experiment scripts and synthetic safety tests; 45 tests passed.
+
+Recorded user request to display scale battery percentage in Android using the already observed live Battery Service reading.
+
+Recorded owner decisions: discard incoming readings older than five minutes, investigate clock drift correction and possible index/initials discovery without assuming support, and deprioritize HR.
+
+Read BF990 Current Time live: 10-byte date/time, read/write/notify properties, approximately 223 seconds behind host local time. No clock write; ticking and time-setting remain unverified.
+
+Owner-authorized clock test wrote local time once; immediate readback was within one second and a reconnect showed an advancing clock within two seconds. Long-term, DST and queued-reading effects remain unverified.
+
+Recorded owner-directed ordering: evaluate measurement age against the pre-correction scale clock, then correct drift; offer another reading if setup causes a timeout.
+
+Owner-coordinated queued-versus-new timing capture: 14 earlier weight frames arrived over roughly 29 seconds after consent; fresh reading arrived at roughly 98 seconds and final status at 100 seconds. No separate queue completion marker identified.
+
+Implemented provisional Android BLE current-reading path, synthetic emulator packet display, private last-reading storage and detailed errors. Debug APK builds and synthetic UI/decoder checks passed; real BF990 Android communication, onboarding, clock correction, RRD and backup remain unverified or unimplemented.
+
+Added SQLite per-user daily storage, weekly/monthly weighted rollups, raw-packet archive, selectable diagrams and segregated emulator sample history. Debug build passed; emulator generated 80 synthetic observations with stable counts across repeated sample generation. Physical-phone BLE and backup remain unverified.
+
+Fixed Android top navigation visibility using system insets and a no-action-bar theme; debug build and emulator Settings navigation passed. Phone confirmation remains pending.
+
+Owner confirmed Android phone authorization and diagram values. Changed diagrams to show five charts on a scrollable page and three time-range buttons; debug build and emulator range-selection check passed.
+
+Recorded next-session requests for internationalization, a Settings language selector and “Password (4 digits)” terminology; no implementation requested. Owner will resume later.

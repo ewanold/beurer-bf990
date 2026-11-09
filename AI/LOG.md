@@ -89,3 +89,71 @@ Fixed Android top navigation visibility using system insets and a no-action-bar 
 Owner confirmed Android phone authorization and diagram values. Changed diagrams to show five charts on a scrollable page and three time-range buttons; debug build and emulator range-selection check passed.
 
 Recorded next-session requests for internationalization, a Settings language selector and “Password (4 digits)” terminology; no implementation requested. Owner will resume later.
+
+## 2026-11-09 — Android design and localization
+
+Added rounded measurement cards with illustrative scales, bordered charts, rounded navigation controls, light/dark/system appearance and English/German/system language selection. Renamed user-facing consent code to password; protocol remains unchanged. Debug build succeeded; phone visual verification and other open features remain.
+
+## 2026-11-09 — Chart and navigation refinements
+
+Moved bold, theme-aware chart titles into cards, padded the plot axes, added whole-number ticks and requested default ranges, and enabled horizontal page swipes. Debug build passed; phone verification remains.
+
+## 2026-11-09 — Settings and header polish
+
+Added rounded labeled settings cards, spaced and bordered navigation buttons, and localized title and current-user headings.
+
+## 2026-11-09 — Timeline ticks and selected-user verification
+
+Shortened navigation labels, made chart grid spacing uniform, removed the illustrative-range note, and added optional selected-user birth-date verification. Full user enumeration remains unverified; Android hardware testing is outstanding.
+
+## 2026-11-09 — Two-user experiment prepared
+
+Prepared a guarded test to register and individually verify two synthetic users, restore the original selected user, and preserve registration recovery states. The offline suite passed 50 tests; no live scale operation has run. User enumeration remains a separate unverified question.
+
+## 2026-11-09 — Two-user test interrupted on reconnect
+
+Synthetic user 2 was registered and its profile read back successfully. The connection for user 3 failed with D-Bus NoReply before registration; the saved user 3 state remains prepared. Preserve states and retry after waking the scale. Full enumeration and reselecting user 1 remain unconfirmed.
+
+## 2026-11-09 — Two-user readback completed
+
+Registered two synthetic profiles, verified indices 2 and 3 and their profile fields on a fresh connection, then verified and reselected user 1. Both test users remain; their recovery states are private. Full enumeration remains unverified.
+
+## 2026-11-09 — User discovery probe
+
+Live reads before authorization returned unselected index and unknown profile-field sentinels despite three occupied users; after known-user consent the test profile read back. The User Data inventory exposes no standard initials characteristic. User 1 was reauthorized.
+
+## 2026-11-09 — Failed disposable-user authorization probe
+
+One incorrect authorization for user 3 was rejected and left previously authorized user 2 selected; profile reads still matched user 2. No profile writes were attempted, and user 1 was reauthorized and verified.
+
+## 2026-11-09 — Shared code and disposable-user preparation
+
+Removed the Android password field and used the owner-requested fixed common code; debug build passes. Prepared guarded deletion and recreation of disposable users; device test remains pending. Publishing the code or APK exposes the existing credential.
+
+## 2026-11-09 — Shared-code user scan
+
+Deleted disposable user 3, recreated user 2 using user 1’s code, and verified user 1. A live scan found indices 1 and 2 accessible and 3–12 inaccessible; rejection does not prove absence. Android Settings now offers a shared-code scan and selection; hardware validation, registration and profile modification remain. Debug build and 54 Python tests passed.
+
+## 2026-11-09 — User selection and launcher icon
+
+Limited optional shared-code scanning to indices 1–8 without asserting the device maximum, clarified saving a phone-local default user, and added an attributed Flaticon launcher icon. Recorded sequential-code recovery as an untested last resort. Debug build passed; icon source redistribution terms need checking before public release.
+
+## 2026-11-09 — Timeline controls and user-list placement
+
+Shortened and spaced timeline buttons; moved discovered-user choices directly below the readout status and surfaced scan permission failures on Settings. Debug build passed; Android scan still needs hardware verification.
+
+## 2026-11-09 — Simplified user readout
+
+Owner confirmed Android readout works. Added padding and borders to readout and user buttons, removed explanatory and inaccessible-index text, and clear temporary results on save while retaining diagnostic feedback for incomplete reads.
+
+## 2026-11-09 — Height setting
+
+Added height to user readout and settings, with a queued scale update after selected-user checks, readback and recovery marker. Android height writes still require a disposable-user hardware test.
+
+## 2026-11-09 — Controlled profile updates
+
+Added birth-date updates guarded by a previously read profile date, readback and recovery state. Saving prompts the user to wake the scale and starts connecting. Debug build and synthetic date-decision checks passed; hardware verification remains.
+
+## 2026-11-09 — Closing checkpoint
+
+Owner reports that the latest Android profile update seems to work. Updated the handover and remaining work; individual field and recovery validation remains open.

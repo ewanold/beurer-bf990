@@ -71,6 +71,26 @@ Five standard displayed metrics are validated by the constrained offline decoder
 
 ## Language and terminology
 
-- [ ] Add Android internationalization using string resources and a language selector in Settings; determine supported languages and fallback.
-- [ ] Replace user-facing “consent code” wording with “Password (4 digits)” or equivalent, without changing the protocol or exposing credentials.
-- [ ] Confirm the five-chart and three-range-button layout on the phone.
+- [x] Add English and German Android string resources and a language selector in Settings, with system default fallback.
+- [x] Replace user-facing “consent code” wording with “Password (4 digits)”, without changing the protocol or exposing credentials.
+- [ ] Confirm the five-chart, three-range-button, measurement-card and theme layouts on the phone.
+- [ ] Review translation coverage for technical exception details and expand languages as needed.
+
+- [ ] Validate optional Android birth-date verification on BF990, including mismatch/read failure and early notifications; investigate verified user enumeration before offering selection by birth date.
+
+- [x] Run the prepared two-user experiment: users 2 and 3 and original user 1 individually verified; preserve recovery states.
+- [ ] Investigate a verified BF990 user-list operation with the two disposable profiles present; known-index readbacks do not establish enumeration.
+
+- [x] Compare pre-consent User Data reads with known user 2 and inventory the User Data service: unselected fields were FF and no standard initials characteristic was present.
+- [ ] Find and verify a BF990 list/initials mechanism without assuming read-only 2A9A can select a slot or interpreting unselected FF as a missing user.
+
+- [x] Run the owner-authorized shared-code disposable-user change and scan indices 1–12 on BF990.
+- [x] User reports Android shared-code user readout works on the phone.
+- [ ] Implement safe registration and empty-scale onboarding; extend profile modification beyond date and height. The fixed code exposes the current user 1 credential in the APK and source.
+
+- [ ] Before public release, verify that the icon’s Flaticon terms permit distributing its PNG in the public source repository; retain in-app attribution.
+- [ ] Keep sequential code testing as an owner-approved last-resort recovery idea only; lockout, timing on one index and empty-slot identification are unknown.
+
+- [ ] Test Android height read, selected-user write, revision readback, mismatch, interruption and recovery on disposable BF990 user 2 before applying profile changes to user 1.
+
+- [ ] Owner reports the latest Android profile update seems to work; confirm which date/height changes and readbacks were checked, and validate mismatch and interruption recovery on disposable user 2.

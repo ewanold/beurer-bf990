@@ -96,6 +96,18 @@ Heart rate, segmental measurements, visceral fat and the private field layout ar
 This document summarizes the project's live observations and synthetic decoder tests; it is not copied from a manufacturer protocol. Consult [research references](../AI/BF990_RESEARCH.md), including the Bluetooth SIG User Data procedure and the manufacturer user manual, and [observation guidance](../AI/OBSERVATIONS.md) for future comparisons. Do not place actual measurements, device addresses or consent codes in public examples.
 
 
+### Shared-code scan (BF990 V02.13)
+
+With two profiles registered using a common code and a previously deleted third profile, a live sequential consent scan of indices 1–12 read profiles 1 and 2; 3–12 rejected consent. The deleted third index and an incorrect password for a known occupied index both returned result 05. A rejected index therefore cannot distinguish an absent user from a user protected by a different code. User 1 was reauthorized after the scan.
+
+### Failed authorization and selection (BF990 V02.13)
+
+After authorizing disposable user 2, one attempt to authorize disposable user 3 with an incorrect code returned result 05. User 2 remained selected and its profile remained readable. User 1 was subsequently reauthorized and verified. This does not establish whether a profile write with no selected user would be accepted or where it would apply; no such write was attempted.
+
+### User selection and unselected reads (BF990 V02.13)
+
+On a fresh connection with three known users, User Index 181C/2A9A was read-only and read FF before authorization. Birth date, height, and sex also read as all-FF unknown sentinels at that point; after authorization for a known user, the expected profile was read. Therefore unselected FF values do not establish that a user slot is empty. The User Data service inventory did not include a standard initials or name characteristic. A private list or initials mechanism remains unverified. See the latest [handover](../AI/HANDOVER.md) for the bounded probe and limits.
+
 ## Other-model commands to investigate (unverified on BF990)
 
 The following are paraphrased from a BF600 transmission protocol (revision 002, dated 2017-12-06). Except for the specific BF990 observations identified in the table, they are **hypotheses for BF990**, not verified BF990 operations. Service UUID, characteristic properties, frame layouts, units and effects can differ. Check the full service/characteristic pair on the actual device; a matching short UUID does not establish compatibility. For example BF600 uses FFF0, while this BF990 exposed FFFF; BF990 FFFF/FFF5 emits 20-byte packets, unlike the BF600 reference-weight read. Never run unverified writes automatically. The recorded BF990 inventory lists FFFF/FFF2 as read and write-without-response, without the BF600 user-list notification property; FFFF/FFF1 has write-without-response and notify, but its meaning is unknown. See [capture inventory](../AI/CAPTURE.md).

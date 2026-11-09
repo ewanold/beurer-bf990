@@ -4,7 +4,11 @@
 
 Read BF990 weight/body-composition measurements directly over Bluetooth on Linux. Keep profiles, credentials, captures, and observed values local. Wi-Fi setup failed and cloud sharing is unwanted. Document verified BF990 behavior without assuming compatibility with other models.
 
-## Current checkpoint: 2026-11-08
+## Current checkpoint: 2026-11-09
+
+The owner reports that Android user readout and the latest profile update seem to work on the phone. Individual date/height persistence and recovery cases still need confirmation. The app has a current-reading screen, per-user retention and charts, theme/language settings, and optional readout of shared-code users 1–8. Registration, backup/restore and clock correction remain open. Publication considerations and the latest limits are in [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-09).
+
+## Earlier checkpoint: 2026-11-08
 
 **Connection, local user registration, consent, profile readback, and measurement reception are verified on BF990 firmware V02.13.** The latest three-minute observation capture received six distinct weight/body pairs, 18 private payloads, and status 01. Timestamps suggest four stored readings and two current readings. An offline decoder now validates weight, BMI, body fat, body water and muscle against the supplied display observations; private metrics/HR remain unidentified.
 
@@ -45,4 +49,4 @@ The owner wants measurements older than five minutes discarded, because readings
 
 ## Language and password terminology
 
-The owner requests internationalization, a Settings language selector, and user-facing “Password (4 digits)” terminology for the existing scale consent code. These are not implemented; see [HANDOVER.md](HANDOVER.md#next-session-requirements-language-and-password-wording).
+The owner requests internationalization, a Settings language selector, and user-facing “Password (4 digits)” terminology for the existing scale consent code. English and German, system language fallback, and a Settings selector are implemented; see [HANDOVER.md](HANDOVER.md#android-design-and-localization-2026-11-09).

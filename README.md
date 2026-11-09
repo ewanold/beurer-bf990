@@ -82,3 +82,7 @@ A local Codex resume script is excluded from Git because it identifies a private
 ## Android development
 
 The Android application is currently a buildable skeleton; it does not yet connect to the scale. For the reproducible Linux setup, SDK packages, build and phone installation steps, see [Android development setup](AI/DEVELOPMENT.md). Project handover and protocol research under `AI/` are intended to be included in the repository; private data under `database/` is excluded.
+
+## Icon attribution
+
+App icon: [Weighing scale by Pixel perfect](https://www.flaticon.com/free-icon/weighing-scale_776792), via Flaticon. The icon is provided under the Flaticon license and requires attribution; it is not covered by the project’s MIT license.

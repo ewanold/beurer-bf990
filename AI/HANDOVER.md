@@ -1,5 +1,89 @@
 # Handover: 2026-11-08
 
+## Closing checkpoint: 2026-11-09
+
+The owner reports that the latest controlled Android profile update “seems to work” after testing with the phone. The report is encouraging but does not specify which fields, readback or recovery cases were checked; do not claim those details were independently verified. Android user readout also works according to the owner. Resume by clarifying or testing birth-date and height persistence and interrupted-update recovery with disposable user 2 as needed. User 1 must be preserved; user 3 was deleted, and the current user 2 recovery state is in ignored `database/multi-user-test-2-shared-state.json`. Do not rerun old test scripts that assume the original synthetic profile without checking current device state.
+
+Remaining major work: safe new-user onboarding and profile management, backup/restore including raw archive, clock correction and queue ordering, retention edge cases, broader UI/i18n validation, and release preparation. The app currently embeds the owner-requested shared credential, so source/APK publication exposes the current user 1 credential; the Flaticon icon has separate attribution terms and source-redistribution permission remains to be checked. The APK is `android/app/build/outputs/apk/debug/app-debug.apk`. Earlier sections are historical where they conflict with this checkpoint.
+
+## Controlled Android birth-date and height updates: 2026-11-09
+
+The owner reported that editing a date led to a mismatch, because the earlier app treated the new date only as an identity check. Settings now uses the previously read/verified birth date as a baseline: after selecting a user from the readout and editing the date, Save stores a pending change, prompts the user to wake the scale and starts connection. The client verifies model, authorization and selected index, checks the live date against the baseline before writing a different date, reads back the date and updates/verifies profile revision. Height uses the same selected-user sequence. Durable pending/dirty markers support interrupted writes; an unexpected current date stops the update. If there is no verified baseline, date input remains a verification value; use Read scale users and select the profile before editing. No user needs deletion. BMI uses the scale profile for subsequent readings. Debug build passed and a synthetic Java date-decision harness covered baseline mismatch, missing baseline, readback failure and recovery; The owner subsequently reported that the phone test seems to work; individual field and recovery outcomes remain unconfirmed. Validate further with disposable user 2 as needed.
+
+## Android height setting: 2026-11-09
+
+Settings accepts an optional height in whole centimetres (50–250). User readout now reads each authorized user's 181C/2A8E height; choosing a profile fills it. Saving queues a height update for that index. On the next connection the Android client verifies model, authorizes the user, checks selected index and any entered birth date, reads the existing height, and if needed writes the verified BF990 two-byte height and profile revision with readback. It persists a recovery marker before a height write, retains pending work on failure, and does not accept measurements during pending verification. A saved matching height requires no write. User must reconnect after saving; BMI is computed by the scale, so a later measurement is needed. This Android write/recovery flow is new and has not been tested on a physical scale; use a disposable user first. Changing an existing measurement does not recalculate historic BMI. Debug build passed; the existing 54 Python tests passed but do not exercise the Android write flow.
+
+## Simplified user readout: 2026-11-09
+
+The owner reports that Android user readout works. Settings now removes the explanatory index/shared-code text, styles the readout and discovered-user buttons with padding and borders, and clears temporary scan results and status after a user is saved. Completed scans do not display inaccessible-index counts; an incomplete scan with partial results displays a generic retry message, while a failure with no results retains diagnostic details. Actual index coverage, registration and profile editing remain limited as described below. The debug build passed for this revision.
+
+## User readout layout and timeline buttons: 2026-11-09
+
+Timeline range buttons now use short All/Alle text, spacing and borders matching navigation. In Settings, scan results and a selection heading appear immediately after the readout button and status, before the name/index/date fields. Tapping a result fills index and birth date; entering a local name and saving sets the phone default. Permission denial during a scan is shown on Settings. Android device scanning remains unverified and any incomplete/failed scan is not a complete user list. Debug build passed.
+
+## User selection, launcher icon and recovery idea: 2026-11-09
+
+Settings offers optional shared-code readout for indices 1–8 and displays accessible index/birth-date pairs; the user selects a profile, enters a phone-local name and saves it as this phone's default. The limit of eight is an experimental scan range, not a verified device maximum; live responses were 05 for indices 3–8 and 04 for 9–12. Inaccessible does not mean empty. Android scanning remains untested on physical hardware; no user registration or scale profile editing is implemented.
+
+Owner suggested testing sequential codes as a last-resort recovery option. The 1–12 multi-index scan averaged about 0.255 seconds between requests, implying roughly 42 minutes worst case per index, 21 minutes average, excluding delays. This timing is not a measurement of repeated guesses on one index; rate limiting, lockout, disconnects and distinguishing empty slots remain unknown. No brute-force implementation or guessing was run. Never automatically guess codes.
+
+The app launcher uses a Flaticon weighing-scale icon by Pixel perfect, linked in Settings and README. The icon has its own attribution-required Flaticon terms, not MIT; the free license's permissions for redistribution in a public source repository should be checked before publication. Debug build passed.
+
+## Shared-code experiment and Android scan: 2026-11-09
+
+After the owner woke the scale, verified and deleted disposable user 3, deleted disposable user 2, and recreated user 2 at the expected index with the same code as user 1. Reauthorized and verified user 1. Authorizing the deleted index 3 with the shared code returned result 05, identical to the earlier deliberately incorrect password result; it cannot establish that any inaccessible index is empty. A separate live Linux scan tried indices 1–12 with the common code: 1 and 2 were authorized and their profiles read; 3–12 returned inaccessible. User 1 was reverified. Private captures: `database/captures/shared-user-test-20261109T165741-213216Z.jsonl` and `database/captures/shared-user-scan-20261109T165908-224360Z.jsonl`. Current recovery state for new user 2 is `database/multi-user-test-2-shared-state.json`; older states for 2 and 3 record acknowledged deletions and must be preserved.
+
+Android Settings now offers a shared-code scan of indices 1–8, displays accessible indices and birth dates and allows selection; rejection is reported as inaccessible, not empty. Android BLE scanning and birth-date handling are not yet tested on hardware. New-user registration, profile editing and safe empty-scale onboarding remain unimplemented; failed consent does not prove a slot is free. The app source and APK contain the owner's current user 1 credential by explicit request, so publication exposes that credential. Debug build passed and 54 Python tests passed.
+
+## Shared-code Android change: 2026-11-09
+
+The owner requested using user 1's existing code for all app users and removing the password field. The Android client now uses the requested fixed common code; the debug build passes, but the Android changes are not yet tested on the scale. This deliberately places the existing user 1 credential in app source and APK; publishing either exposes it. Existing users created with a different code will not authorize through this app. User scanning is now implemented as described above; registration and profile modification are not yet implemented. A rejected authorization cannot by itself distinguish a missing slot from one using a different code. See the next section for the prepared disposable-user test.
+
+## Shared-code disposable-user change prepared: 2026-11-09
+
+The owner requests removing the app password setting, using the existing user 1 code as a common app code, replacing disposable user 2 with that code, and deleting disposable user 3 while preserving user 1. `scripts/test-shared-user.sh` was run successfully as described above: it verifies user 1, deletes verified test users 3 and 2 with persisted intent/result, reconnects and registers a synthetic user expecting index 2 with the original code, checks deleted index 3 and reauthorizes user 1. It stops on unresolved outcomes or unexpected assignments; preserve all private states. The common code and user 1 credential are private and must not be copied into committed docs. The shared-code user list remains an experiment: failed authorization can indicate a different password as well as an absent user, so it cannot establish slot availability. Offline suite: 53 tests passed.
+
+## Failed-authorization probe result: 2026-11-09
+
+Authorized and verified disposable user 2, then attempted user 3 authorization once with a deliberately incorrect code. The scale rejected it with result 05; selected index remained 2 and profile reads still matched user 2. User 1 was subsequently authorized and verified. No profile fields were written. This does not prove that unauthenticated writes are rejected: user 2 was previously authorized, and no safe way to target user 3 without its code was identified. An unselected-state profile write could target an unknown user, contrary to the owner's requirement to preserve user 1. Private capture: `database/captures/unauthorized-probe-20261109T164904-409454Z.jsonl`.
+
+## Prepared failed-authorization probe: 2026-11-09
+
+Owner explicitly designated users 2 and 3 disposable and requires user 1 preserved. `scripts/probe-unauthorized-user.sh` was prepared and subsequently run as described above: it authorizes disposable user 2, tries exactly one deliberately incorrect password for disposable user 3, checks selected index and profile reads, and reauthorizes/verifies user 1. It does not write profile data. The question is whether a failed authorization changes selection; without a verified way to target an unauthorized write to a disposable profile, no profile write is safe for user 1. Full suite 50 tests passed.
+
+## User discovery and initials probe: 2026-11-09
+
+On a fresh BF990 connection, the standard User Data service exposed 2A9A as read-only and 2A85/2A8E/2A8C as read/write-without-response; no standard initials or name characteristic was present in that service inventory. Before consent, live reads showed 2A9A FF (no selected user) and birth date, height and sex fields all FF (unknown sentinel), despite known occupied users 1–3. The same fields yielded the expected synthetic user 2 profile after consent, and user 1 was subsequently authorized and verified. This establishes that these unselected FF fields cannot be interpreted as proof that the scale has no users. It does not test an independently selected index without consent, establish a private user-list endpoint, or rule out a private initials representation. There is no verified way to set 2A9A directly or read profiles by index without credentials; do not guess consent codes. Private capture: `database/captures/user-discovery-20261109T164346-433300Z.jsonl`. `scripts/probe-user-discovery.sh` reproduces this read probe and reauthorizes user 1; authorization is a verified UDS write, while profile fields are only read. 50 offline tests passed.
+
+## Two-user experiment completed: 2026-11-09
+
+After an initial reconnect failure, a retry reused synthetic user 2 and registered synthetic user 3. On a subsequent fresh connection, users 2 and 3 were individually authorized and their index, birth date, sex and height matched the synthetic profiles; user 1 was then authorized and its profile read back, leaving user 1 selected. Both disposable profiles remain on the scale, and their recovery states are in ignored `database/multi-user-test-2-state.json` and `database/multi-user-test-3-state.json`; preserve them. Private capture: `database/captures/multi-user-test-20261109T163805-624527Z.jsonl`. These are known-index, known-password readbacks and do not establish list enumeration or birth-date-based index discovery. No user-list operation or deletion was issued.
+
+## Prepared two-user experiment: 2026-11-09
+
+Live attempt: user 2 was registered, authorized, and its index, birth date, sex and height were read back successfully. Reconnection for user 3 failed with D-Bus NoReply before registration; user 3 state remains prepared with no assigned index. User 2 remains on the scale; user 1 re-selection has not been confirmed after this attempt. Wake the scale again and retry the same script; it reuses user 2 without re-registering and retains the saved user 3 state. Do not delete or reset either state. No all-user enumeration has been demonstrated.
+
+The owner authorized creation of two synthetic profiles with expected scale-assigned indices 2 and 3, followed by readback. `scripts/test-multi-user.sh` is prepared; see the latest live attempt above. It saves separate ignored recovery states before registering, stops on ambiguous outcomes or unexpected indices, creates each profile on a fresh connection using the verified UDS flow, then separately authorizes and verifies indices 2 and 3 and finally user 1. Profiles 2 and 3 will remain on the scale; cleanup was not requested. A real user-list operation is still unverified: these readbacks demonstrate access to known indices, not enumeration or selection by birth date. Do not use the older deleted-user-2 state as the new registration state. The scale may need waking again between stages. Full offline Python suite: 50 tests passed. No Bluetooth command has been sent in preparation.
+
+## Android navigation, chart ticks and birth-date verification: 2026-11-09
+
+Navigation uses short Current/Timeline labels (Aktuell/Verlauf in German), the illustrative-range note is removed, and chart ticks are evenly spaced with integer steps where possible. Settings accepts an optional ISO-format birth date per selected index. After consent and selected-index verification, the Android client reads 181C/2A85 and refuses measurements if the date does not match or the read fails; incoming weight notifications before the date check finishes are ignored. Existing profiles without a date retain prior behavior. This Android sequence has not been tested against the physical scale. Full scale-user enumeration and selecting an index by birth date remain unimplemented and unverified; the settings page says so rather than claiming to show all users. Never probe unknown codes or infer an inaccessible slot is empty.
+
+## Android settings and navigation polish: 2026-11-09
+
+Settings selectors and profile fields are individually labeled in rounded, bordered cards. Top navigation buttons have spacing and a contrasting border; the title and current-user heading are localized. The current heading is kept to one line and truncates exceptionally long names. The debug build succeeded; visual verification on a phone remains outstanding.
+
+## Android chart and navigation refinements: 2026-11-09
+
+Chart titles are inside rounded cards; chart and measurement labels are larger, bold and theme-aware. Chart axes have additional padding and whole-number ticks. Default vertical ranges are weight 0–120 kg, body fat 10–40%, body water 30–80%, and muscle 15–70%; ranges expand to include readings outside those bounds. BMI uses an automatically chosen range. Horizontal swipes move between pages; vertical scrolling remains available. The debug APK built successfully; no emulator was available for this revision, so verify appearance and swipe interaction on a phone.
+
+## Android design and localization: 2026-11-09
+
+Current readings now use rounded, contrasting cards with the value and an illustrative colored scale. Scale ranges are fixed visual bounds, not personalized or clinical classifications; out-of-range indicators clamp to the ends and unavailable values have no indicator. Charts have rounded borders, navigation and range controls have rounded corners, and Settings offers light, dark, or system appearance. English, German and system-language choices are persisted; unsupported system languages fall back to English. User-facing consent terminology is now Password (4 digits); stored numeric credentials and the protocol are unchanged. Existing shorter entries remain accepted, and saved codes display zero-padded in the password field. Settings changes recreate the activity and end any active scale session. Some low-level exception details can still be in English.
+
+The debug APK built successfully and launched on the API 36 emulator; navigation controls were present. The emulator disconnected during further interaction, so theme, language and card visual validation and phone testing remain outstanding. The previously recorded open work, including safe user onboarding, backup/restore and scale clock correction, remains open; these are not implemented by the design change. See [TODOS](TODOS.md).
+
 ## Offline protocol test foundation: 2026-11-08
 
 Added an offline BLE advertising AD-structure parser and synthetic tests for complete, absent, malformed/truncated, unrelated, duplicate, unknown-field, multiple-index, and empty-pending cases. Raw advertising bytes are retained. The `0x181D` interpretation is labeled BF600 candidate only; no BF990 advertising semantics are verified. See [protocol test plan](PROTOCOL_TEST_PLAN.md) for the private evidence template, abort conditions, and coordinated live stages.
@@ -84,7 +168,9 @@ The owner reported top page selection was not visible on a phone. The app now us
 
 The owner installed the debug app on a phone, authorized the existing scale user with the saved consent code, and reported that connection and diagram values work. The current daily database key is user plus local day and later accepted readings replace that day; real same-day database contents were not separately inspected. The diagrams page now presents all five metrics vertically on one scrollable page with 28 days, six months and all time buttons. Debug build and emulator six-month button selection passed; phone verification of this updated layout is pending. User management, clock correction and backup remain incomplete.
 
-## Next-session requirements: language and password wording
+## Earlier requirements: language and password wording
+
+This historical request was implemented on 2026-11-09; see the latest design and localization section above.
 
 The owner requests internationalization support with a language selector in Settings. No language set or fallback policy was specified; choose sensible defaults or clarify if needed. Move user-facing text to Android string resources and ensure the selection is applied consistently throughout the app. In the UI, replace the technical label “consent code” with approachable wording such as “Password (4 digits)”, including related help and error text. This refers to the existing scale user consent code; do not change the underlying protocol, credentials, or permit an error message to leak the password. These are documented requirements only and have not been implemented.
 

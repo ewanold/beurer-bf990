@@ -9,3 +9,5 @@ local.properties
 
 codex-resume.sh
 .obsidian/
+claude-resume.sh
+.claude/settings.local.json

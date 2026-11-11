@@ -1,5 +1,7 @@
 # Android development setup
 
+Debug builds use `database/signing/debug.keystore`, an ignored, shared project-local Android debug keystore with the standard Android debug alias and password. Put your existing compatible debug keystore there before building; the build fails if it is absent. New contributors without an existing app installation can create their own Android debug key there using `keytool`, but their APK cannot update an installation signed with another key. Restrict access and keep a secure backup; a shared filesystem may not honor local Unix permission bits. Do not commit the keystore. Release signing requires a separate protected key.
+
 The Android app is an early skeleton, not yet a working scale app. These steps target Linux x86-64; other operating systems need their own Android Studio and SDK setup. Run commands from the repository root. Allow several gigabytes of free space for both archives and extracted tools. The installer uses ~/.cache for temporary files by default; set TMPDIR to select a filesystem with sufficient space.
 
 1. Check prerequisites: `uname -sm` and `command -v bash curl tar unzip sha256sum mktemp`. Java 17 or newer is required for the Android Gradle Plugin; the installer supplies Studio's JDK.

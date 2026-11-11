@@ -10,4 +10,18 @@ android {
         versionCode = 1
         versionName = "0.1"
     }
+    val sharedDebugKey = rootProject.file("../database/signing/debug.keystore")
+    signingConfigs {
+        getByName("debug") {
+            storeFile = sharedDebugKey
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+    buildTypes {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
 }

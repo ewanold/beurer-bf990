@@ -2,6 +2,13 @@
 
 ## Current checkpoint
 
+- [x] Owner confirmed the APK signed by the original PC's key updated successfully.
+- [x] Owner reported the revised measurement cards and floating charts look better; current weight is now formatted to one decimal in the latest build.
+- [ ] Test real backup transfer and the restore picker.
+
+- [x] Copy the presumed original PC debug key into ignored shared storage, configure debug signing, rebuild and verify the APK signer.
+- [ ] Check shared signing directory access controls and protect a backup of the key; verify retained app data as part of the real backup test.
+
 Five standard displayed metrics are validated by the constrained offline decoder; 45 tests pass, including protocol-candidate parser and disposable-user deletion safeguards. No capture is running. Resume from [HANDOVER.md](HANDOVER.md), including its closing checkpoint and [protocol test plan](PROTOCOL_TEST_PLAN.md).
 
 ## Measurement validation and protocol research

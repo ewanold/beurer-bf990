@@ -1,5 +1,53 @@
 # Handover: 2026-11-08
 
+## Closing checkpoint: 2026-11-11
+
+The owner confirmed the APK signed with the original PC's debug key updated successfully, and described the revised measurement cards and floating charts as better. The current weight display was subsequently changed to one decimal place; its APK built successfully and the owner responded positively, though installation of that final build was not explicitly confirmed. The current APK is `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+Next: validate real backup transfer and the restore picker; check shared signing directory access controls and secure key backup. Registration, clock correction and queued-reading handling remain open. The current source and documentation changes are uncommitted; preserve them. Older sections below describe historical states and are superseded by this checkpoint.
+
+## Display and signing follow-up: 2026-11-11
+
+The owner confirmed that the APK signed with the original PC's debug key successfully updated the phone. Current measurement scales now show weight 0–120 kg, body fat 10–40%, water 30–80% and muscle 15–70%; BMI remains 10–45. Measurement cards have reduced vertical padding. History charts now derive their axis from the selected data with approximately 20% padding on each side and seven evenly spaced rounded ticks; narrow or single-value ranges allow decimal labels. Build and synthetic axis checks passed; this display revision awaits phone inspection. Real backup transfer remains to be checked.
+
+## Signing update: 2026-11-11 — phone installation pending
+
+Historical: the owner subsequently confirmed the signed APK update succeeded; see the closing checkpoint above.
+
+On latitude5540, the owner identified this PC as the source of the last working build. Its local Android debug keystore was copied without overwriting to ignored `database/signing/debug.keystore`; the original remains in place. Android debug builds now explicitly use that shared key, with the standard Android debug alias and password, and fail if the file is absent. The shared SMB mount reports broad file permissions despite a restrictive umask; verify server-side access controls and protect/back up the key. The key is not in Git.
+
+The debug build passed and APK signature verification matches the local key (SHA-256 `9ed0b5ee415ecd8beee2e1fbaa79706363d5161e61acbcd8a8a9aee070c534c1`), different from the previously failing APK. The installed phone certificate has not been checked, so compatibility is still unconfirmed. The owner will try updating with `android/app/build/outputs/apk/debug/app-debug.apk`; preserve the installed app and its data if the update fails. Continue with real backup transfer after a successful update.
+
+## Resume on original build PC: 2026-11-11 — shared signing key
+
+Historical investigation: the key was copied, signing configured, and the owner confirmed a successful update. See the closing checkpoint above for remaining work.
+
+**Immediate task:** the owner is switching to the PC/login that produced the last working APK. Recover that build's existing signing key and configure this app to use the same key on all build PCs. The current APK fails to update the phone with “App nicht installiert”. A signing mismatch is suspected, not yet proven. Preserve the installed app and measurements; do not uninstall or generate a replacement key as a workaround.
+
+**Verified here (optiplex-3060-3):** the project directory is on a shared SMB mount; `/home/ewald/.android/debug.keystore` is on the local home filesystem. Sharing the checkout therefore does not share the default debug key. No keystore was found inside the checkout, and `android/app/build.gradle.kts` has no explicit signing configuration. The other local login's key path was inaccessible; no key was read or copied. No phone was connected via ADB. The current APK's v2 signature verifies and its metadata is readable, but installation has not been reproduced.
+
+Current APK signer certificate SHA-256 (public fingerprint, for comparison):
+
+```text
+3b6d923724f5a7dffa099c96b2d0d5f0d3bd6bd0a2cc9cf6388707fdb676b1aa
+```
+
+**Next actions on the original PC/login:**
+
+1. Read this section before rebuilding: the APK output directory is shared and a rebuild will replace the current artifact. Locate the original login's `~/.android/debug.keystore`; do not overwrite it. Compare its public certificate with a previous working APK or the installed phone's APK if available. `keytool -list -v -keystore "$HOME/.android/debug.keystore" -alias androiddebugkey` displays certificate details and prompts for the keystore password. `"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs PATH_TO_APK` displays an APK's public certificate; adjust the SDK path/version to that PC.
+2. If a phone is connected and authorized, use `"$ANDROID_HOME/platform-tools/adb" install -r android/app/build/outputs/apk/debug/app-debug.apk` to obtain the exact installation error. A certificate mismatch or `INSTALL_FAILED_UPDATE_INCOMPATIBLE` would support the signing hypothesis; investigate the actual error if different.
+3. Copy the verified original keystore to a private shared location accessible to the intended build logins. Suggested project-specific location: `database/signing/debug.keystore` (the entire `database/` directory is already ignored). Confirm share access controls; never commit the key or print its contents. Retain the original and a secure backup. The owner has requested one valid key for all PCs; no key transfer or configuration change has happened yet.
+4. Configure the debug signing configuration in `android/app/build.gradle.kts` to use that same shared keystore on every PC. Fail clearly if it is missing rather than silently signing with a new per-PC key. Keep private signing material out of committed files; do not change package ID to bypass the update problem.
+5. Build with that PC's valid JDK, verify the new APK's signer matches the original, then update the existing app without clearing data. Confirm measurements/settings remain. Return to the real backup-transfer and restore-picker validation below.
+
+**Repository state at handover:** backup/restore implementation is committed in `3186e7d` (`add backup and restore`); the earlier uncommitted-state note below is historical. This investigation changed documentation only. The ignored `codex-resume.sh` now uses hostname mappings: optiplex-3060-3 points to the current investigation session, while the other mapped hosts retain the prior session ID. If the other session resumes without this conversation, the instructions above are sufficient. No new build, signing change, phone installation, or scale operation occurred here.
+
+## Installation investigation: 2026-11-11
+
+The owner reports that the latest APK fails with the generic German “App nicht installiert”; the last working build was made on another PC. Whether this PC has previously supplied a successful update is unknown. On optiplex-3060-3, `apksigner verify --verbose --print-certs` verifies the current debug APK (v2 signature); `aapt dump badging` reads its metadata successfully (package `org.beurer.bf990`, version code 1, minimum API 26). No ADB device was connected. These checks do not establish installation or update compatibility.
+
+A different debug signing certificate is the leading hypothesis, not confirmed: the build uses the default per-PC debug keystore. Next: obtain the exact failure with `adb install -r android/app/build/outputs/apk/debug/app-debug.apk`, or compare the current and previous working APK certificate SHA-256 values with `apksigner verify --print-certs`. Android's [signing documentation](https://developer.android.com/studio/publish/app-signing) explains debug keystore generation and update certificate compatibility. If mismatched, rebuild using the original signing key, keeping the key private and outside version control, or build on the original PC. Preserve the installed app and measurements; do not uninstall as a diagnostic shortcut. No source change or rebuild was made during this investigation.
+
 ## Closing checkpoint: 2026-11-11 — backup and restore
 
 After three days of phone use the owner reports that measurements are read and displayed correctly and that user switching and settings changes work. Deliberate error/reconnect/timeout tests and profile mismatch/interruption recovery on disposable user 2 remain open.

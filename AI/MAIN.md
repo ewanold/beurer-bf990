@@ -6,6 +6,8 @@ Read BF990 weight/body-composition measurements directly over Bluetooth on Linux
 
 ## Current checkpoint: 2026-11-11
 
+The owner confirmed that the original PC's signing key allowed the APK update and liked the revised measurement cards and floating history axes. The final build also displays current weight to one decimal place; its installation was not explicitly confirmed. Real backup transfer and restore-picker validation are next. See [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-11).
+
 The owner reports three days of correct phone operation (measurements, user switching, settings). Backup/restore via a dated zip (share, save to file, restore/open with) is implemented and emulator-validated with synthetic data; see [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-11--backup-and-restore). Registration and clock correction remain open.
 
 ## Previous checkpoint: 2026-11-09

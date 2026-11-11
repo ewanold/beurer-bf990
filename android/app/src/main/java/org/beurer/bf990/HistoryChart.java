@@ -12,10 +12,9 @@ import java.util.Locale;
 final class HistoryChart extends View {
     private final boolean dark;
     private final List<HistoryStore.Point> points;
-    private final int metric;
     private final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    HistoryChart(Context c,List<HistoryStore.Point> points,boolean dark,int metric){super(c);this.points=points;this.dark=dark;this.metric=metric;}
+    HistoryChart(Context c,List<HistoryStore.Point> points,boolean dark){super(c);this.points=points;this.dark=dark;}
 
     @Override protected void onDraw(Canvas c){
         super.onDraw(c);
@@ -25,19 +24,12 @@ final class HistoryChart extends View {
         p.setColor(dark?Color.LTGRAY:Color.DKGRAY);
         if(points.isEmpty()){c.drawText(getContext().getString(R.string.no_readings),left,top+30*d,p);return;}
 
-        // Fixed reference windows, expanded when necessary so no readings disappear.
-        double[] lows={0,Double.POSITIVE_INFINITY,10,30,15};
-        double[] highs={120,Double.NEGATIVE_INFINITY,40,80,70};
-        double min=lows[metric],max=highs[metric];
+        double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
         for(HistoryStore.Point v:points){min=Math.min(min,v.value);max=Math.max(max,v.value);}
-        if(metric==1){min=Math.floor(min-1);max=Math.ceil(max+1);}
-        else {min=Math.floor(min/5)*5;max=Math.ceil(max/5)*5;}
-        if(max<=min)max=min+1;
-        double range=max-min;
-        int divisions=6;
-        for(int candidate:new int[]{6,5}){double step=range/candidate;if(Math.abs(step-Math.rint(step))<0.000001){divisions=candidate;break;}}
-        double step=range/divisions;
-        int decimals=Math.abs(step-Math.rint(step))<0.000001?0:step*10==Math.rint(step*10)?1:2;
+        ChartRange axis=ChartRange.forValues(min,max);
+        min=axis.min;max=axis.max;
+        int divisions=6, decimals=axis.decimals;
+        double step=axis.step;
         int grid=dark?Color.rgb(80,90,105):Color.LTGRAY;
         int ink=dark?Color.LTGRAY:Color.DKGRAY;
         for(int i=0;i<=divisions;i++){

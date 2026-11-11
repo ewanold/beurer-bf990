@@ -1,5 +1,25 @@
 # Project log
 
+## 2026-11-11 — Closing checkpoint
+
+Owner liked the revised display. Changed current weight to one decimal place and rebuilt successfully. Updated the handover and work queue; real backup transfer and shared-key access checks remain.
+
+## 2026-11-11 — Display ranges and update confirmation
+
+Owner confirmed the APK update worked. Moved the requested fixed ranges to the current-value scales, reduced card padding, and gave history charts floating seven-tick axes. Debug build and synthetic axis checks passed; phone visual review remains.
+
+## 2026-11-11 — Shared debug signing
+
+Copied the presumed original PC debug keystore into ignored project storage, configured debug builds to use it, and verified the rebuilt APK signer matches. Phone update remains pending; SMB access permissions need checking.
+
+## 2026-11-11 — Handover to original build PC
+
+Prepared original-PC key recovery, certificate comparison, shared debug signing and data-preserving update steps in HANDOVER, MAIN and TODOS. Verified that checkout storage is shared while the current default debug key is local; no explicit project signing configuration exists. Recorded that backup/restore is already committed in 3186e7d. No signing key copied, configuration changed or APK rebuilt; signing mismatch remains unconfirmed.
+
+## 2026-11-11 — APK installation investigation
+
+Owner reports generic installation failure after building on a different PC from the last working update. Current APK passes signature verification and metadata inspection; no ADB device is connected. Recorded suspected per-PC debug signing mismatch and data-preserving confirmation/recovery steps in HANDOVER; cause remains unconfirmed.
+
 ## 2026-11-07
 
 - Established standalone native Linux connection-proof app and focused Markdown status files.

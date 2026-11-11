@@ -4,7 +4,11 @@
 
 Read BF990 weight/body-composition measurements directly over Bluetooth on Linux. Keep profiles, credentials, captures, and observed values local. Wi-Fi setup failed and cloud sharing is unwanted. Document verified BF990 behavior without assuming compatibility with other models.
 
-## Current checkpoint: 2026-11-09
+## Current checkpoint: 2026-11-11
+
+The owner reports three days of correct phone operation (measurements, user switching, settings). Backup/restore via a dated zip (share, save to file, restore/open with) is implemented and emulator-validated with synthetic data; see [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-11--backup-and-restore). Registration and clock correction remain open.
+
+## Previous checkpoint: 2026-11-09
 
 The owner reports that Android user readout and the latest profile update seem to work on the phone. Individual date/height persistence and recovery cases still need confirmation. The app has a current-reading screen, per-user retention and charts, theme/language settings, and optional readout of shared-code users 1–8. Registration, backup/restore and clock correction remain open. Publication considerations and the latest limits are in [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-09).
 

@@ -35,7 +35,7 @@ Five standard displayed metrics are validated by the constrained offline decoder
 
 ## Android application
 
-- [ ] Implement and validate Android BLE discovery, consent, subscriptions and restart against the actual BF990.
+- [x] Implement and validate Android BLE discovery, consent, subscriptions and restart against the actual BF990. Owner reported 2026-11-11 after three days of phone use: measurements read and displayed correctly, user switching and settings changes work.
 - [ ] Implement household user selection by scale index, local name per phone, birth-date verification, registration and profile modification with safe recovery of uncertain registration outcomes.
 - [ ] Investigate how to enumerate occupied indices and authorize an existing user on a newly installed phone; do not infer that an inaccessible index is free.
 - [x] Verify selected-user deletion on one disposable BF990 user, reauthorize user 1 and check rejected test credentials after reconnect.
@@ -43,10 +43,11 @@ Five standard displayed metrics are validated by the constrained offline decoder
 - [ ] Discard received measurements older than five minutes; do not import invalid, uncertain or implausibly future timestamps as current. Preserve raw packets with accepted normalized measurements and implement daily, weekly and monthly retention without mixing users.
 - [ ] Read the pre-correction scale clock and assess incoming measurement age against it (account for elapsed time); discard readings older than five minutes before setting phone-local time if drift exceeds approximately one minute. Validate transfer/clock-write ordering, DST, long-term drift, battery replacement and queued readings.
 - [ ] If setup or synchronization causes the measurement window to expire, show a timeout and offer another reading.
-- [ ] Add measurement display, charts, and user-controlled backup and restore.
+- [x] Add measurement display, charts, and user-controlled backup and restore. Backup zip with share/save/restore implemented 2026-11-11; emulator-validated with synthetic data.
+- [ ] Transfer a real backup to the second phone (Telegram/email/Downloads) and check the imported charts; click through Restore from file.
 - [ ] Show scale battery percentage using a fresh Battery Service 180F/2A19 read; indicate when no current reading is available.
 - [x] Install Android SDK and Gradle; build the debug skeleton.
-- [ ] Test the Android app and verify scale communication on hardware.
+- [x] Test the Android app and verify scale communication on hardware. Owner reported 2026-11-11 after three days of phone use: measurements read and displayed correctly, user switching and settings changes work.
 
 ## Other-model protocol candidates
 
@@ -63,17 +64,18 @@ Five standard displayed metrics are validated by the constrained offline decoder
 ## Android current-reading checkpoint
 
 - [x] Build provisional Android BLE consent/measurement path and emulator synthetic decoder display.
-- [ ] Validate real Android BLE, operation sequencing, notification handling and errors on BF990; test reconnect and timeout.
+- [x] Validate real Android BLE, operation sequencing and notification handling on BF990. Owner reported 2026-11-11 after three days of phone use: measurements read and displayed correctly, user switching and settings changes work.
+- [ ] Deliberately test error, reconnect and timeout paths (not covered by normal use).
 - [ ] Implement user registration, selection/discovery and consent transfer; current screen requires manually supplied existing index/code.
 - [ ] Implement verified clock correction after handling queued readings and test timestamp/queue ordering.
 - [x] Add per-user daily storage, weighted weekly/monthly rollups and selectable diagrams; synthetic emulator checks completed.
-- [ ] Validate retention edge cases, same-day replacement and real data on device; implement backup including raw archive.
+- [ ] Validate retention edge cases, same-day replacement and real data on device; backup including raw archive implemented 2026-11-11.
 
 ## Language and terminology
 
 - [x] Add English and German Android string resources and a language selector in Settings, with system default fallback.
 - [x] Replace user-facing “consent code” wording with “Password (4 digits)”, without changing the protocol or exposing credentials.
-- [ ] Confirm the five-chart, three-range-button, measurement-card and theme layouts on the phone.
+- [x] Confirm the five-chart, three-range-button, measurement-card and theme layouts on the phone. Owner reported 2026-11-11 after three days of phone use: measurements read and displayed correctly, user switching and settings changes work.
 - [ ] Review translation coverage for technical exception details and expand languages as needed.
 
 - [ ] Validate optional Android birth-date verification on BF990, including mismatch/read failure and early notifications; investigate verified user enumeration before offering selection by birth date.
@@ -93,4 +95,5 @@ Five standard displayed metrics are validated by the constrained offline decoder
 
 - [ ] Test Android height read, selected-user write, revision readback, mismatch, interruption and recovery on disposable BF990 user 2 before applying profile changes to user 1.
 
-- [ ] Owner reports the latest Android profile update seems to work; confirm which date/height changes and readbacks were checked, and validate mismatch and interruption recovery on disposable user 2.
+- [x] Owner reports the Android profile update works in normal use (2026-11-11).
+- [ ] Validate profile mismatch and interruption recovery on disposable user 2 (not covered by normal use).

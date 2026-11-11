@@ -60,4 +60,62 @@ final class HistoryStore extends SQLiteOpenHelper {
         points.sort((a,b)->a.date.compareTo(b.date));return points;
     }
     private static void append(SQLiteDatabase db,List<Point> into,String sql,int user){try(Cursor c=db.rawQuery(sql,new String[]{String.valueOf(user)})){while(c.moveToNext())into.add(new Point(c.getString(0),c.getDouble(1)));}}
+
+    // ---- Backup and restore. raw_archive holds one raw reading per user and day and is the source of truth;
+    // ---- daily/weekly/monthly are rebuilt from it after an import.
+    static final class Raw { final int user; final String day; final byte[] weight, body; Raw(int u,String d,byte[] w,byte[] b){user=u;day=d;weight=w;body=b;} }
+    static final class ImportPlan {
+        int added, newer, skipped, rejected;
+        final java.util.TreeSet<Integer> users=new java.util.TreeSet<>();
+        final java.util.Map<String,Measurements.Reading> apply=new java.util.LinkedHashMap<>();
+        int total(){return added+newer+skipped+rejected;}
+    }
+    /** All stored raw readings except the emulator sample user 255. */
+    List<Raw> rawArchive(){
+        List<Raw> rows=new ArrayList<>();
+        try(Cursor c=getReadableDatabase().rawQuery("SELECT user,day,weight_raw,body_raw FROM raw_archive WHERE user<>255 ORDER BY user,day",null)){
+            while(c.moveToNext())rows.add(new Raw(c.getInt(0),c.getString(1),c.getBlob(2),c.isNull(3)?null:c.getBlob(3)));
+        }
+        return rows;
+    }
+    /** Compares imported readings with stored ones without changing anything. The later measurement of a day wins. */
+    ImportPlan plan(List<Measurements.Reading> readings){
+        ImportPlan p=new ImportPlan();java.time.LocalDateTime limit=java.time.LocalDateTime.now().plusHours(1);
+        java.util.Map<String,Measurements.Reading> best=new java.util.LinkedHashMap<>();
+        for(Measurements.Reading r:readings){
+            if(r.user<1||r.user>254||r.time.isAfter(limit)){p.rejected++;continue;}
+            String key=r.user+"|"+r.time.toLocalDate();Measurements.Reading prior=best.get(key);
+            if(prior!=null){p.skipped++;if(!r.time.isAfter(prior.time))continue;}
+            best.put(key,r);
+        }
+        SQLiteDatabase db=getReadableDatabase();
+        for(Measurements.Reading r:best.values()){
+            try(Cursor c=db.rawQuery("SELECT weight_raw FROM raw_archive WHERE user=? AND day=?",new String[]{String.valueOf(r.user),r.time.toLocalDate().toString()})){
+                if(!c.moveToFirst())p.added++;
+                else if(r.time.isAfter(Measurements.weight(c.getBlob(0)).time))p.newer++;
+                else{p.skipped++;continue;}
+            }
+            p.apply.put(r.user+"|"+r.time.toLocalDate(),r);p.users.add(r.user);
+        }
+        return p;
+    }
+    /** Stores the planned readings and rebuilds the derived tables of the affected users in one transaction. */
+    void apply(ImportPlan p){
+        SQLiteDatabase db=getWritableDatabase();db.beginTransaction();
+        try{
+            for(Measurements.Reading r:p.apply.values())
+                db.execSQL("INSERT OR REPLACE INTO raw_archive VALUES(?,?,?,?)",new Object[]{r.user,r.time.toLocalDate().toString(),r.weightRaw,r.bodyRaw});
+            for(int user:p.users){
+                String[] u={String.valueOf(user)};
+                for(String table:new String[]{"daily","weekly","monthly"})db.delete(table,"user=?",u);
+                try(Cursor c=db.rawQuery("SELECT weight_raw,body_raw FROM raw_archive WHERE user=?",u)){
+                    while(c.moveToNext()){
+                        Measurements.Reading r=Backup.decode(c.getBlob(0),c.isNull(1)?null:c.getBlob(1));
+                        db.execSQL("INSERT OR REPLACE INTO daily VALUES(?,?,?,?,?,?,?,?,?)",new Object[]{user,r.time.toLocalDate().toString(),r.weight,r.bmi,r.fat,r.water,r.muscle,r.weightRaw,r.bodyRaw});
+                    }
+                }
+            }
+            compact(db,LocalDate.now());db.setTransactionSuccessful();
+        }finally{db.endTransaction();}
+    }
 }

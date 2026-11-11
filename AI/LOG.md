@@ -157,3 +157,7 @@ Added birth-date updates guarded by a previously read profile date, readback and
 ## 2026-11-09 — Closing checkpoint
 
 Owner reports that the latest Android profile update seems to work. Updated the handover and remaining work; individual field and recovery validation remains open.
+
+## 2026-11-11 — Backup and restore
+
+Owner confirmed three days of correct phone operation; ticked off hardware items. Added Claude Code support (`CLAUDE.md` imports `AGENTS.md`; local hostname-mapped `claude-resume.sh`). Implemented backup zip (manifest, raw packets, CSV) with share sheet, save-to-file and restore/open-with; import merges by later measurement time and rebuilds derived tables. Debug build passed; emulator checks with synthetic data passed. Real phone-to-phone transfer remains. Session ended with backup code and documentation uncommitted; next step is a real phone-to-phone transfer.

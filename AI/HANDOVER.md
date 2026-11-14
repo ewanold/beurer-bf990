@@ -1,5 +1,11 @@
 # Handover: 2026-11-08
 
+## Closing checkpoint: 2026-11-14
+
+Current-value scales are now personalized. A green band marks the healthy range from the official BF990 manual (rev. 2026-10-15, English "Measuring" step 5): BMI 18.5–25; body fat women 16–28 / men 11–23 %; water women 45–60 / men 50–65 %; muscle women 27–43 / men 37–57 %. Weight is green for BMI 18.5–25 at the profile height, or at a height derived from weight/BMI when none is stored. Values below the band shade to blue. Above the band, weight, BMI and fat shade to yellow and then red; water and muscle end in yellow. Displayed spans: weight 0–120 kg, BMI 10–45, fat 10–40 %, water 40–70 %, muscle 20–65 %. A new per-user Settings selector "Sex (for healthy ranges)" (key `sex_<index>`) affects only the display and is not written to or read from the scale; when it is unset, the scales show the combined range for both sexes. Ranges live in `MeasurementScale.healthy()`/`healthyWeight()`. The owner reviewed the first version and approved the yellow end and the narrowed spans. The debug build passed; the final APK is not yet confirmed on the phone. The owner commits these changes.
+
+Next: as in the 2026-11-11 checkpoint below. Possible follow-up: read sex from scale 181C/2A8C instead of the local setting (Android read unverified).
+
 ## Closing checkpoint: 2026-11-11
 
 The owner confirmed the APK signed with the original PC's debug key updated successfully, and described the revised measurement cards and floating charts as better. The current weight display was subsequently changed to one decimal place; its APK built successfully and the owner responded positively, though installation of that final build was not explicitly confirmed. The current APK is `android/app/build/outputs/apk/debug/app-debug.apk`.

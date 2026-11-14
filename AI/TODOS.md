@@ -84,6 +84,8 @@ Five standard displayed metrics are validated by the constrained offline decoder
 - [x] Replace user-facing “consent code” wording with “Password (4 digits)”, without changing the protocol or exposing credentials.
 - [x] Confirm the five-chart, three-range-button, measurement-card and theme layouts on the phone. Owner reported 2026-11-11 after three days of phone use: measurements read and displayed correctly, user switching and settings changes work.
 - [ ] Review translation coverage for technical exception details and expand languages as needed.
+- [x] Show healthy ranges from the BF990 manual as green bands on current-value scales, with a local per-user sex setting (2026-11-14; phone check of final build pending).
+- [ ] Consider reading the profile sex from scale 181C/2A8C instead of the local display setting; verify the Android read first.
 
 - [ ] Validate optional Android birth-date verification on BF990, including mismatch/read failure and early notifications; investigate verified user enumeration before offering selection by birth date.
 

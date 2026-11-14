@@ -149,4 +149,8 @@
     <string name="height_save_failed">Could not save height update state; no height was written.</string>
     <string name="birthday_save_failed">Could not save the update state; the birth date was not written.</string>
     <string name="save_wake_scale">User saved. Wake the scale to apply profile changes.</string>
+    <string name="sex_ranges">"Sex (for healthy ranges)"</string>
+    <string name="sex_unknown">"Not set (combined ranges)"</string>
+    <string name="sex_female">"Female"</string>
+    <string name="sex_male">"Male"</string>
 </resources>

@@ -1,5 +1,13 @@
 # Project log
 
+## 2026-11-14 — Healthy ranges on current-value scales
+
+Each current-value scale now shows green over the healthy range from the official BF990 manual (rev. 2026-10-15): BMI 18.5–25; fat F 16–28 / M 11–23 %; water F 45–60 / M 50–65 %; muscle F 27–43 / M 37–57 %. Weight is green for BMI 18.5–25 at the profile height, or at a height derived from weight/BMI. Added a local per-user sex setting, used only for display and not written to the scale; when it is unset, the scales show the combined range for both sexes. The debug build passed; no visual check yet on emulator or phone.
+
+Follow-up: the muscle and water scales now end in yellow above the healthy range (no red), because a high value there is not harmful. Debug build passed.
+
+Follow-up: narrowed the displayed scale span to water 40–70 % and muscle 20–65 %. Healthy ranges unchanged.
+
 ## 2026-11-11 — Closing checkpoint
 
 Owner liked the revised display. Changed current weight to one decimal place and rebuilt successfully. Updated the handover and work queue; real backup transfer and shared-key access checks remain.

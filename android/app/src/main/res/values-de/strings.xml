@@ -149,4 +149,8 @@
     <string name="height_save_failed">Status der Größenänderung konnte nicht gespeichert werden; die Größe wurde nicht geschrieben.</string>
     <string name="birthday_save_failed">Änderungsstatus konnte nicht gespeichert werden; das Geburtsdatum wurde nicht geschrieben.</string>
     <string name="save_wake_scale">Benutzer gespeichert. Waage aktivieren, um Profiländerungen zu übernehmen.</string>
+    <string name="sex_ranges">"Geschlecht (für Gesundheitsbereiche)"</string>
+    <string name="sex_unknown">"Nicht gesetzt (kombinierte Bereiche)"</string>
+    <string name="sex_female">"Weiblich"</string>
+    <string name="sex_male">"Männlich"</string>
 </resources>

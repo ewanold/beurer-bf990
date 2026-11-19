@@ -2,6 +2,12 @@
 
 ## Current checkpoint
 
+- [x] Show a straight trend line (least squares) in each Timeline chart for the selected range (2026-11-19, build passed).
+- [ ] Check the trend line on the phone; decide whether a slope label is wanted.
+- [x] Highlight the selected page and time-range button, add an accent color and colored status messages (2026-11-19, build passed).
+- [ ] Owner reviews the new colors on the phone; decide on optional per-metric colors (weight blue, BMI violet, fat orange, water cyan, muscle green) in charts and as a card stripe.
+- [x] Pixelate name and birth date in the README settings screenshot (2026-11-19).
+
 - [x] Owner confirmed the APK signed by the original PC's key updated successfully.
 - [x] Owner reported the revised measurement cards and floating charts look better; current weight is now formatted to one decimal in the latest build.
 - [ ] Test real backup transfer and the restore picker.

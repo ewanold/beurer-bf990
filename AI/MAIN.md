@@ -4,15 +4,19 @@
 
 Read BF990 weight/body-composition measurements directly over Bluetooth on Linux. Keep profiles, credentials, captures, and observed values local. Wi-Fi setup failed and cloud sharing is unwanted. Document verified BF990 behavior without assuming compatibility with other models.
 
-## Current checkpoint: 2026-11-11
+## Current checkpoint: 2026-11-19
 
-The owner confirmed that the original PC's signing key allowed the APK update and liked the revised measurement cards and floating history axes. The final build also displays current weight to one decimal place; its installation was not explicitly confirmed. Real backup transfer and restore-picker validation are next. See [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-11).
+The app is in daily use on the owner's phone. Timeline charts now show a least-squares trend line (built, not yet viewed on a device). The README was rewritten for app users with screenshots; Linux tool documentation moved to [LINUX_TOOLS.md](LINUX_TOOLS.md), and the handover was reduced to the current state with history moved to [LOG.md](LOG.md). See [HANDOVER.md](HANDOVER.md).
 
-The owner reports three days of correct phone operation (measurements, user switching, settings). Backup/restore via a dated zip (share, save to file, restore/open with) is implemented and emulator-validated with synthetic data; see [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-11--backup-and-restore). Registration and clock correction remain open.
+## Checkpoint: 2026-11-11
+
+The owner confirmed that the original PC's signing key allowed the APK update and liked the revised measurement cards and floating history axes. The final build also displays current weight to one decimal place; its installation was not explicitly confirmed. Real backup transfer and restore-picker validation are next. See [HANDOVER.md](LOG.md#closing-checkpoint-2026-11-11).
+
+The owner reports three days of correct phone operation (measurements, user switching, settings). Backup/restore via a dated zip (share, save to file, restore/open with) is implemented and emulator-validated with synthetic data; see [HANDOVER.md](LOG.md#closing-checkpoint-2026-11-11--backup-and-restore). Registration and clock correction remain open.
 
 ## Previous checkpoint: 2026-11-09
 
-The owner reports that Android user readout and the latest profile update seem to work on the phone. Individual date/height persistence and recovery cases still need confirmation. The app has a current-reading screen, per-user retention and charts, theme/language settings, and optional readout of shared-code users 1–8. Registration, backup/restore and clock correction remain open. Publication considerations and the latest limits are in [HANDOVER.md](HANDOVER.md#closing-checkpoint-2026-11-09).
+The owner reports that Android user readout and the latest profile update seem to work on the phone. Individual date/height persistence and recovery cases still need confirmation. The app has a current-reading screen, per-user retention and charts, theme/language settings, and optional readout of shared-code users 1–8. Registration, backup/restore and clock correction remain open. Publication considerations and the latest limits are in [HANDOVER.md](LOG.md#closing-checkpoint-2026-11-09).
 
 ## Earlier checkpoint: 2026-11-08
 
@@ -26,7 +30,7 @@ Native Python with system dbus/GLib and BlueZ. No packages were installed during
 
 ## Documentation map
 
-- [HANDOVER.md](HANDOVER.md): complete resumable checkpoint, commands, files, limits.
+- [HANDOVER.md](HANDOVER.md): current checkpoint, rules in force, private files, next steps.
 - [TODOS.md](TODOS.md): current work queue.
 - [OBSERVATIONS.md](OBSERVATIONS.md): next display-versus-packet verification session.
 - [PROTOCOL_TEST_HANDOFF.md](PROTOCOL_TEST_HANDOFF.md): bounded offline test assignment and live-test safeguards for a separate session.
@@ -36,10 +40,11 @@ Native Python with system dbus/GLib and BlueZ. No packages were installed during
 - [DEVICE_API.md](DEVICE_API.md): BF990 evidence and protocol limits.
 - [DATA_FORMAT.md](DATA_FORMAT.md): observed packet layouts and unknown fields.
 - [BF990_RESEARCH.md](BF990_RESEARCH.md): public search limits and primary references.
-- [LOG.md](LOG.md): dated milestones.
+- [LOG.md](LOG.md): dated milestones and the detailed history of earlier checkpoints.
+- [LINUX_TOOLS.md](LINUX_TOOLS.md): Linux connection, capture, setup and decoder commands.
 - [DOCUMENTATION.md](DOCUMENTATION.md): maintenance policy.
 - [BF990 protocol observations](../docs/BF990-protocol.md): observed GATT flow, packet layouts and limits.
-- [README](../README.md): command usage.
+- [README](../README.md): user guide for the Android app.
 
 ## Android preparation
 
@@ -51,8 +56,8 @@ Household members agree on scale user indices. The app should list the scale’s
 
 ## Measurement import policy
 
-The owner wants measurements older than five minutes discarded, because readings under a selected user may belong to someone else. Read the scale clock before correction; assess incoming timestamps against that clock, then correct drift beyond roughly one minute. If the measurement window expires during setup, offer another reading. Invalid or uncertain timestamps must not silently become current readings. HR research is low priority. See [HANDOVER.md](HANDOVER.md#measurement-freshness-and-user-discovery-decisions).
+The owner wants measurements older than five minutes discarded, because readings under a selected user may belong to someone else. Read the scale clock before correction; assess incoming timestamps against that clock, then correct drift beyond roughly one minute. If the measurement window expires during setup, offer another reading. Invalid or uncertain timestamps must not silently become current readings. HR research is low priority. See [HANDOVER.md](LOG.md#measurement-freshness-and-user-discovery-decisions).
 
 ## Language and password terminology
 
-The owner requests internationalization, a Settings language selector, and user-facing “Password (4 digits)” terminology for the existing scale consent code. English and German, system language fallback, and a Settings selector are implemented; see [HANDOVER.md](HANDOVER.md#android-design-and-localization-2026-11-09).
+The owner requests internationalization, a Settings language selector, and user-facing “Password (4 digits)” terminology for the existing scale consent code. English and German, system language fallback, and a Settings selector are implemented; see [HANDOVER.md](LOG.md#android-design-and-localization-2026-11-09).

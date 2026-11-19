@@ -3,6 +3,7 @@ package org.beurer.bf990;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.view.View;
 import java.time.LocalDate;
@@ -26,6 +27,11 @@ final class HistoryChart extends View {
 
         double min=Double.POSITIVE_INFINITY,max=Double.NEGATIVE_INFINITY;
         for(HistoryStore.Point v:points){min=Math.min(min,v.value);max=Math.max(max,v.value);}
+        long first=day(points.get(0).date),last=day(points.get(points.size()-1).date);
+        long[] days=new long[points.size()];double[] values=new double[points.size()];
+        for(int i=0;i<days.length;i++){days[i]=day(points.get(i).date)-first;values[i]=points.get(i).value;}
+        Trend trend=Trend.fit(days,values);
+        if(trend!=null){for(double t:new double[]{trend.at(0),trend.at(last-first)}){min=Math.min(min,t);max=Math.max(max,t);}}
         ChartRange axis=ChartRange.forValues(min,max);
         min=axis.min;max=axis.max;
         int divisions=6, decimals=axis.decimals;
@@ -39,7 +45,11 @@ final class HistoryChart extends View {
             p.setColor(ink);String label=String.format(Locale.getDefault(),"%."+decimals+"f",tick);
             c.drawText(label,left-10*d-p.measureText(label),y+4*d,p);
         }
-        long first=day(points.get(0).date),last=day(points.get(points.size()-1).date);
+        if(trend!=null){
+            float y0=(float)(bottom-(trend.at(0)-min)/(max-min)*(bottom-top)),y1=(float)(bottom-(trend.at(last-first)-min)/(max-min)*(bottom-top));
+            p.setColor(dark?Color.rgb(255,170,80):Color.rgb(214,110,20));p.setStrokeWidth(2*d);p.setPathEffect(new DashPathEffect(new float[]{8*d,5*d},0));
+            c.drawLine(left,y0,right,y1,p);p.setPathEffect(null);
+        }
         float px=0,py=0;p.setColor(dark?Color.rgb(100,190,235):Color.rgb(32,111,155));p.setStrokeWidth(2*d);
         for(int i=0;i<points.size();i++){
             HistoryStore.Point v=points.get(i);long day=day(v.date);

@@ -3,7 +3,7 @@
 This folder is the standalone durable knowledge base. It must support resumption without chat history or another application repository.
 
 - MAIN: concise current goal/status and complete navigation.
-- HANDOVER: latest verified checkpoint, exact repeat commands, private-file locations, limits and next actions.
+- HANDOVER: current checkpoint only, rules in force, private-file locations and next actions; link to LOG instead of keeping superseded checkpoints.
 - TODOS: concise active queue; completed requirements separated from future work.
 - OBSERVATIONS: user procedure/checklist for matching displayed values to packets.
 - ARCHITECTURE: component/runtime/storage boundaries.
@@ -12,7 +12,9 @@ This folder is the standalone durable knowledge base. It must support resumption
 - DEVICE_API: source facts versus BF990 hardware observations.
 - DATA_FORMAT: observed packet structure and decoding uncertainty.
 - BF990_RESEARCH: dated search limits and manufacturer/specification references.
-- LOG: short dated milestones.
+- LOG: short dated milestones, plus the detailed history of former handover checkpoints.
+- LINUX_TOOLS: Linux command-line tools and their usage.
+- README (repository root): user guide for the app; developer material belongs under AI/.
 
 Update affected files together and replace stale current statements rather than appending contradictory checkpoints. Historical milestones belong in LOG/CAPTURE. Do not add references to unrelated application projects or third-party example projects. Retain relevant manufacturer, Bluetooth-standard, and runtime-dependency API references.
 

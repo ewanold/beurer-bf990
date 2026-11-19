@@ -1,88 +1,151 @@
-# Beurer BF990
+# BF990 scale app
 
-This project is an experiment in AI-assisted development of a local Android app for the Beurer BF990 scale. The project owner provides the ideas and direction; AI helps investigate the protocol, document decisions, and develop the software. The project is intended to be shared so others can contribute or continue it in a fork.
+An Android app that reads the **Beurer BF990** diagnostic scale directly over Bluetooth and keeps all measurements on your phone. It needs no account, no cloud and no Wi-Fi. It shows your current values with healthy ranges, draws the history of each value, and can copy all data to a second phone.
 
-**Current status:** the Linux proof of connection and measurement capture work with the tested BF990, and five measurement values have been checked against the display. The Android app is a buildable skeleton and does not yet connect to the scale. The project uses the [MIT license](LICENSE).
+This is a private project, developed with the help of AI. It has been tested with one BF990 (firmware V02.13) and one Android phone. There is no app store release. The project uses the [MIT license](LICENSE).
 
-## Linux connection proof
+## What you need
 
-A small Linux command-line app that scans for a Beurer scale, establishes or reuses a Bluetooth GATT connection, and proves communication through fresh characteristic reads. Tested successfully with a **BF990** on 2026-11-07.
+- A Beurer BF990 scale.
+- An Android phone with Android 8.0 or newer and Bluetooth.
+- The app's APK file. Ask the maintainer for it, or build it yourself as described in [Android development setup](AI/DEVELOPMENT.md).
+- A user on the scale that uses the password this app is set up for. **The app cannot create scale users yet**; see [Known limitations](#known-limitations).
 
-```bash
-bash scripts/beu-connect.sh --name BF990
-```
+On first start, allow the app to find and connect to **nearby devices** (on Android 11 and older: location). Without that permission it cannot reach the scale.
 
-Wake the scale and keep it nearby. Confirm pairing in the desktop Bluetooth prompt if requested. Close any competing phone app. This app does not initiate pairing itself or guess PINs. With no selector the app selects a unique `BF` plus numeric model name; multiple scales require explicit selection.
+## Taking a measurement
 
-```bash
-bash scripts/beu-connect.sh --scan-only
-bash scripts/beu-connect.sh --name BF990 --scan-seconds 5 --timeout 25
-bash scripts/beu-connect.sh --address AA:BB:CC:DD:EE:FF --output database/proof.json
-```
+1. Open the app. If a user is set up, it starts looking for the scale right away.
+2. Wake the scale by tapping it. The app shows "Ready. Step on the scale for a new measurement."
+3. Step on the scale barefoot and hold the hand electrodes until the scale has finished.
+4. The values appear on the **Current** page and are saved.
 
-The report defaults to `database/connection-latest.json`, relative to the project, even when launched elsewhere. It contains UTC timestamps, selected device identity, services, characteristic UUIDs, raw read bytes, decoded identity/battery values, individual read errors, and verification flags. Each run replaces the default report; choose a separate `--output` to retain an earlier run. Reports contain the device address and are excluded from Git.
+Only fresh measurements are accepted. A reading that is older than five minutes is ignored, because someone else may have stood on the scale under your user. If the connection drops or times out, wake the scale and tap **Connect / repeat measurement**.
 
-`CONNECTION PROVEN` requires a successful live read and a still-connected, services-resolved device. Full scale-profile verification additionally requires successful four-byte feature reads from both Weight Scale and Body Composition services. A cached discovery entry or paired status alone does not prove communication.
+One value per day is kept. If you weigh yourself twice on the same day, the later reading replaces the earlier one.
 
-Exit status: 0 = both scale services verified (or scan-only completed); 1 = runtime, cleanup, or report error; 2 = partial/failed profile verification; 130 = interrupted. A successful scan-only run never claims a connection.
+## Current
 
-## Verified result
+<img src="images/page-1.jpg" alt="Current page with weight, BMI, body fat, body water and muscle" width="280" align="right">
 
-On 2026-11-07 the app read manufacturer **Beurer**, model **BF990**, firmware **V02.13**, battery **100%**, weight feature `9f 00 00 00`, body composition feature `cf 10 00 00`. All six reads succeeded. The app reused the user-confirmed connection and preserved it afterwards.
+The **Current** page shows your latest measurement: weight, BMI, body fat, body water and muscle. When the scale reports it, the battery level is shown as well.
 
-Successful standard GATT reads do not establish proprietary protocol compatibility. The connection-proof command performs no GATT writes. The separate local setup/capture commands below register a user and receive measurements; private metric decoding remains under development.
+Each value has a colored bar with a dot marking your value:
 
-## Runtime and checks
+- **Green** is the healthy range given in the BF990 manual. For weight it is the range where your BMI would be between 18.5 and 25 at your height.
+- **Blue** means below the healthy range.
+- **Yellow to red** means above it. For body water and muscle the bar ends in yellow, because a high value there is not a health concern.
 
-Requires Linux, BlueZ, a powered Bluetooth adapter, and system Python with `dbus` (`python3-dbus` on Debian/Ubuntu). Those dependencies were already available on the test machine; no packages were installed. The launcher deliberately uses `/usr/bin/python3` so distro D-Bus bindings remain available. No Node runtime, pip environment, web server, or cloud account is needed.
+The small numbers under the bar are the ends of the displayed scale and the limits of the green range. The healthy ranges for body fat, water and muscle depend on sex; choose yours in **Settings**. Without that choice the bars show a combined range.
 
-```bash
-env PYTHONPATH=src /usr/bin/python3 -B -m unittest discover -s tests -v
-bash -n scripts/beu-connect.sh
-```
+The bars are a guide, not a medical assessment.
 
-Run as the logged-in desktop user with access to the host system D-Bus. In a Codex sandbox that hides host D-Bus, the probe must run with approved host access. An unavailable bus, powered-off adapter, sleeping scale, competing connection, or GATT authorization failure is reported as an error rather than a simulated success. BlueZ may return cached discovery entries: subsequent live reads are the verification.
+**Connect / repeat measurement** starts a new connection to the scale. It sits at the top of the page while there is no measurement from today or an error is shown, and moves to the bottom once today's measurement has arrived.
 
-The app releases its own discovery session and disconnects only connections it opens. Existing connections remain connected.
+<br clear="right">
 
-## Documents
+## Timeline
 
-- [BF990 protocol observations](docs/BF990-protocol.md), including packet layouts and the measurement sequence.
-- [Project status and documentation map](AI/MAIN.md).
-- [Latest checkpoint and resumption](AI/HANDOVER.md).
+<img src="images/page-2.jpg" alt="Timeline page with charts for weight, BMI and body fat" width="280" align="right">
 
-## Capture measurement events locally
+The **Timeline** page draws one chart per value. The buttons at the top choose the period:
 
-Run `bash scripts/capture.sh --seconds 60`, wake the scale, and wait for `LISTENING` before weighing. Raw events and full GATT inventory are saved locally to a unique JSONL file under ignored `database/captures/`. This requires system `dbus` and `gi` Python bindings. The command subscribes to notifications/indications without sending proprietary commands or uploading data. See [capture status and limitations](AI/CAPTURE.md). The first completed minute enabled 21 subscriptions but received only identity-property events, not measurements.
+- **28 days**: one point per day.
+- **6 months**: daily points plus weekly averages.
+- **All**: everything, with monthly averages for older data.
 
-## Bluetooth-only local profile setup
+The app keeps daily values for 28 days. After that it combines them into weekly averages, and after six months into monthly averages. The original scale data is kept as well, so a backup always contains every single reading.
 
-`bash scripts/setup-profile.sh --listen-seconds 60` creates/configures one scale user from ignored `database/profile-input.json` and then listens for a reference measurement. The first BF990 run successfully registered/authorized a user and verified date of birth, sex, height, and database revision through readback. No Wi-Fi or cloud is involved. Keep `database/profile-state.json`: it stores the assigned index and consent code, and prevents duplicate registration after an interrupted request. See [local profile setup](AI/LOCAL_PROFILE.md).
+A dashed **trend line** runs through each chart. It is the straight line that best fits the points of the selected period, so you can see at a glance whether a value is going up or down.
 
-For an explicit measurement-start capture using the saved user: `bash scripts/setup-profile.sh --start-measurement --listen-seconds 180`. This option sends 00 to FFF4 under service FFFF after consent. On the verified BF990 it produced standard weight/body and private packets. The original capture command only subscribes and sends no measurement-start command. See [observed packet layouts](AI/DATA_FORMAT.md).
+Swipe left or right to change pages.
 
-## Next verification session
+<br clear="right">
 
-Record displayed weight, BMI, body fat, body water, muscle percentage, heart rate and any other actually shown values, with units and cycle times. Use the private `database/observations.md` worksheet. [OBSERVATIONS.md](AI/OBSERVATIONS.md) gives the procedure; [HANDOVER.md](AI/HANDOVER.md) contains the full current checkpoint. Five displayed standard metrics now agree with the offline decoder; private-field and HR mapping remain next. Connection and local setup already work.
+## Settings
 
-## Decode and compare saved readings offline
+The **Settings** page is longer than the screen, so it is shown in two parts.
 
-```bash
-bash scripts/decode.sh database/captures/setup-20261107T153953-843965Z.jsonl --observations database/observations.md
-```
+### Users
 
-The decoder supports the observed metric 0E weight and 0398 body layouts. It saves decoded values, raw bytes and optional display comparisons under ignored `database/analysis/`; console output contains counts/agreement only. Both supplied observations agree for weight, BMI, body fat, water and muscle within display rounding. Similar values do not uniquely number the cycles. HR/private metrics remain undecoded. Unsupported packets warn rather than guessing. See [data format and validation](AI/DATA_FORMAT.md).
+<img src="images/page-3a.jpg" alt="Settings page, upper part with user fields" width="280" align="right">
 
-## Development and AI handover
+The scale can store several people. Each person has a number on the scale, the **scale user index**. Agree in your household who has which number.
 
-Start with [AI/MAIN.md](AI/MAIN.md), [the handover](AI/HANDOVER.md), [the work queue](AI/TODOS.md), and [development setup](AI/DEVELOPMENT.md). Contributors and AI agents should also read [AGENTS.md](AGENTS.md). The `AI/` folder records decisions, protocol evidence, validation limits and build history so people and future AI sessions can continue without the original conversation.
+1. Tap **Read scale users** and wake the scale. The app lists the users it can access, with their birth dates.
+2. Tap your entry. Index, birth date and height are filled in.
+3. Enter the **name on this phone**. The name is only stored on this phone.
+4. Tap **Save user**. From now on the app reads this user's measurements.
 
-A local Codex resume script is excluded from Git because it identifies a private session. Fork contributors can start their own session using the committed AI notes. Never commit device addresses, consent codes, personal profiles, captures, or measurements; local data belongs in ignored `database/`. Preserve existing profile state and observations when continuing work.
+If a user is missing from the list, try again. A missing user may also use a different password; the app cannot tell.
 
-## Android development
+**Birth date** and **height** are stored on the scale and used for its body calculations. If you change them here and tap **Save user**, wake the scale: the app checks the current values on the scale and then writes the new ones. Old measurements are not recalculated.
 
-The Android application is currently a buildable skeleton; it does not yet connect to the scale. For the reproducible Linux setup, SDK packages, build and phone installation steps, see [Android development setup](AI/DEVELOPMENT.md). Project handover and protocol research under `AI/` are intended to be included in the repository; private data under `database/` is excluded.
+<br clear="right">
+
+### Display and backup
+
+<img src="images/page-3b.jpg" alt="Settings page, lower part with display options and backup" width="280" align="right">
+
+- **Sex (for healthy ranges)** only changes the green ranges on the Current page. It is not sent to the scale.
+- **Language**: English, German, or the phone's language.
+- **Appearance**: light, dark, or as the phone is set.
+
+**Backup** copies all stored measurements of all users into one file named like `bf990-backup-2026-11-19.zip`. It contains the raw scale data and a table (`measurements.csv`) you can open on a PC. It does not contain passwords or settings.
+
+- **Share backup** sends the file through Telegram, email or another app.
+- **Save backup to file** stores it, for example in Downloads or a cloud folder.
+- **Restore from file** reads a backup back in.
+
+Messengers and email store the file unencrypted, so treat it like any other health record.
+
+<br clear="right">
+
+## Moving data to a second phone
+
+1. On the first phone, tap **Share backup** or **Save backup to file**.
+2. On the second phone, install the app and either tap the received file and choose this app ("Open with" or "Share"), or use **Restore from file** in Settings.
+3. The app shows how many readings are new, newer than the stored ones, already present, or invalid. Tap **Import**.
+
+Restoring merges the data: nothing is deleted. If both phones have a reading for the same person and day, the later measurement wins. Then set up your own user in Settings on the second phone.
+
+## Privacy
+
+- Measurements, names and settings stay on the phone. The app sends nothing to the internet.
+- The app talks only to the scale, over Bluetooth.
+- A backup leaves the phone only when you share or save it.
+
+## Known limitations
+
+- The app cannot create scale users yet. The scale itself supports it over Bluetooth, and this was tested with the project's Linux tools: the app asks for a new user and the scale picks the next free number itself, so existing users are not overwritten. Until the app can do this, a new user has to be created with those tools on a Linux PC, using the app's password.
+- The app can only reach scale users that use its password. A user with another password (for example one created by the Beurer app) does not appear in **Read scale users**, and the app cannot tell such a user from an empty slot. It also cannot change that user's data, because the scale rejects the wrong password.
+- The app uses one fixed password for all scale users. It is visible in the source code.
+- The scale clock is not corrected yet. Measurement dates come from the scale, so if its clock is wrong, the dates are too.
+- Heart rate and other values the scale shows on its own display are not read.
+- Only the BF990 is supported. Other Beurer scales use different data and may not work.
+
+## Common messages
+
+| Message | What to do |
+|---|---|
+| No BF990 was found within 20 seconds | Wake the scale, keep the phone nearby, and try again. |
+| Bluetooth permission was denied | Allow "Nearby devices" (older Android: location) for the app in Android settings. |
+| User authorization failed | Check the scale user index in Settings. The user may use a different password. |
+| Waiting for a measurement timed out | Wake the scale and tap **Connect / repeat measurement**. |
+| Nothing to import | Every reading in the backup is already on this phone, or older. |
+
+## For developers
+
+The project also contains Linux tools that were used to work out the scale's Bluetooth protocol. Start with:
+
+- [Project status and documentation map](AI/MAIN.md), [current handover](AI/HANDOVER.md), [work queue](AI/TODOS.md)
+- [Android development setup](AI/DEVELOPMENT.md): build, signing, installation, emulator
+- [Linux tools](AI/LINUX_TOOLS.md): connection proof, capture, local user setup, offline decoder
+- [BF990 protocol observations](docs/BF990-protocol.md)
+- [Contributor and AI agent rules](AGENTS.md)
+
+Never commit device addresses, passwords, personal profiles or measurements. Local data belongs in the ignored `database/` folder.
 
 ## Icon attribution
 
-App icon: [Weighing scale by Pixel perfect](https://www.flaticon.com/free-icon/weighing-scale_776792), via Flaticon. The icon is provided under the Flaticon license and requires attribution; it is not covered by the project’s MIT license.
+App icon: [Weighing scale by Pixel perfect](https://www.flaticon.com/free-icon/weighing-scale_776792), via Flaticon. The icon is provided under the Flaticon license and requires attribution; it is not covered by the project's MIT license.

@@ -40,6 +40,8 @@ The small numbers under the bar are the ends of the displayed scale and the limi
 
 The bars are a guide, not a medical assessment.
 
+**Why body fat, water and muscle add up to more than 100 %.** Each value is its own share of your total weight; the three are not separate parts of your body. Only body fat and the fat-free rest (muscle, organs, bone, blood) add up to 100 %. Body water is mostly inside that fat-free rest, and muscle itself is about three quarters water, so the same kilograms count towards both water and muscle. A total of around 110–125 % is normal: even the middle of the healthy ranges for men (fat 17 %, water 57.5 %, muscle 47 %) adds up to about 121 %. Compare each value with its own green range, not the sum. The scale estimates these values from a small electrical current through the body, so the trend over several weeks says more than a single reading.
+
 **Connect / repeat measurement** starts a new connection to the scale. It sits at the top of the page while there is no measurement from today or an error is shown, and moves to the bottom once today's measurement has arrived.
 
 <br clear="right">
